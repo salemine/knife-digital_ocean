@@ -197,5 +197,18 @@ describe Chef::Knife::DigitalOceanDropletCreate do
     end
   end
 
-end
+  context 'passing backups_enabled (--backups-enabled)' do
+    let(:backups_enabled) { true }
+    let(:custom_config) {
+      {
+       :backups_enabled => backups_enabled
+      }
+    }
 
+    it 'backups should be available to Bootstrap' do
+      bootstrap = subject.bootstrap_for_node('123.123.123.123')
+      bootstrap.config[:backups_enabled].should eql(backups_enabled)
+    end
+  end
+
+end

@@ -1,9 +1,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -145,6 +145,12 @@ class Chef
         :default => "22",
         :proc => Proc.new { |port| Chef::Config[:knife][:ssh_port] = port }
 
+      option :backups_enabled,
+        :short => "-b",
+        :long => "--backups-enabled",
+        :description => "Enables backups for the created droplet",
+        :default => false
+
       def run
         $stdout.sync = true
 
@@ -189,7 +195,8 @@ class Chef
                                           :image_id           => locate_config_value(:image),
                                           :region_id          => locate_config_value(:location),
                                           :ssh_key_ids        => locate_config_value(:ssh_key_ids).join(','),
-                                          :private_networking => locate_config_value(:private_networking))
+                                          :private_networking => locate_config_value(:private_networking),
+                                          :backups_enabled    => locate_config_value(:backups_enabled))
 
         if response.status != 'OK'
           ui.error("Droplet could not be started #{response.inspect}")
@@ -273,6 +280,7 @@ class Chef
         bootstrap.config[:environment] = locate_config_value(:environment)
         bootstrap.config[:first_boot_attributes] = locate_config_value(:json_attributes) || {}
         bootstrap.config[:secret_file] = locate_config_value(:secret_file) || {}
+        bootstrap.config[:backups_enabled] = locate_config_value(:backups_enabled)
         bootstrap
       end
 
